@@ -8,8 +8,7 @@ from PIL import ImageColor
 from copy import copy, deepcopy
 from time import time
 
-import sys
-import ui
+import sys, ui
 
 ZERO_COLOUR = Qt.white
 
@@ -168,6 +167,7 @@ class Main_window(QMainWindow, ui.Ui_MainWindow):
         Добавление функционала к выполняемым задачам
         '''
         self.but_fill.clicked.connect(self.fill_area)
+        pass
 
     def delete_figure(self):
         '''

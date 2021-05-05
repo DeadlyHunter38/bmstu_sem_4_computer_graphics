@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QPainter, QBrush, QPen, QPixmap, QPolygon, QPainterPath, QMouseEvent, QColor, QImage, qRgb
+from PyQt5.QtGui import QPainter, QBrush, QPen, QPixmap, QPolygon, QPainterPath, QMouseEvent, QColor, QImage
 from PyQt5.QtCore import QCoreApplication, QEventLoop, QPoint, QPointF, Qt
 from PyQt5.QtWidgets import QGraphicsItem, QMessageBox, QLineEdit, QPushButton, QLabel, QGraphicsScene,\
                             QGraphicsView, QWidget, QMenu, QMainWindow, QAction, QColorDialog
@@ -8,23 +8,25 @@ from PIL import ImageColor
 from copy import copy, deepcopy
 from time import time
 
-
 import sys
-import ui
+import lab_06_ui, stack
 
 ZERO_COLOUR = Qt.white
 
-class GraphicsScene(QGraphicsScene, ui.Ui_MainWindow):
-    def __init__(self, polygons, choose_colour):
+class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
+    def __init__(self, polygons, choose_colour, label_choose_seed_point):
         super().__init__()
         self.setSceneRect(0, 0, 743, 944)
         self.cursor_x = 0; self.cursor_y = 0
         self.flag_pressed_shift = False
         self.flag_fill_outline = False
+        self.flag_choose_seed_point = False
+        self.seed_point_x = 0; self.seed_point_y = 0
         self.count_points = 0
         self.count_polygons = 0
         self.radius_point_click = 1
         self.polygons = polygons
+        self.label_choose_seed_point = label_choose_seed_point
         self.choose_colour_graph = choose_colour
         self.image = QImage(1000, 1500, QImage.Format_ARGB32_Premultiplied)
         self.image.fill(ZERO_COLOUR)
@@ -90,18 +92,29 @@ class GraphicsScene(QGraphicsScene, ui.Ui_MainWindow):
             self.cursor_x = int(event.scenePos().x())
             self.cursor_y = int(event.scenePos().y())
             if self.flag_pressed_shift == False:
-                self.addLine(self.cursor_x, self.cursor_y, self.cursor_x, self.cursor_y,
+                print(f"here_shift_false")
+                if self.flag_choose_seed_point == False:
+                    self.addLine(self.cursor_x, self.cursor_y, self.cursor_x, self.cursor_y,
+                                    self.pen_graph)
+                    self.count_points += 1
+                    if self.count_polygons == len(self.polygons):
+                        self.polygons.append([])
+                    #print(f"self.count_polygons = {self.count_polygons}")
+                    self.polygons[self.count_polygons].append([self.cursor_x, self.cursor_y])
+                    
+                    if self.count_points > 1:
+                        self.addLine(self.polygons[self.count_polygons][-2][0], self.polygons[self.count_polygons][-2][1],
+                                    self.polygons[self.count_polygons][-1][0], self.polygons[self.count_polygons][-1][1],
+                                    self.pen_graph)
+                else:
+                    print(f"here_2")
+                    self.seed_point_x = self.cursor_x
+                    self.seed_point_y = self.cursor_y
+                    self.addLine(self.seed_point_x, self.seed_point_y,
+                                self.seed_point_x, self.seed_point_y, 
                                 self.pen_graph)
-                self.count_points += 1
-                if self.count_polygons == len(self.polygons):
-                    self.polygons.append([])
-                #print(f"self.count_polygons = {self.count_polygons}")
-                self.polygons[self.count_polygons].append([self.cursor_x, self.cursor_y])
-                
-                if self.count_points > 1:
-                    self.addLine(self.polygons[self.count_polygons][-2][0], self.polygons[self.count_polygons][-2][1],
-                                 self.polygons[self.count_polygons][-1][0], self.polygons[self.count_polygons][-1][1],
-                                 self.pen_graph)
+                    self.flag_choose_seed_point = False
+                    self.label_choose_seed_point.setText('Точка выбрана.')
                                  
             else:
                 #анализ горизонтальной и вертикальной линии             
@@ -123,6 +136,8 @@ class GraphicsScene(QGraphicsScene, ui.Ui_MainWindow):
                                      self.pen_graph)
                     self.count_points += 1
                     self.flag_pressed_shift = False
+                
+
         elif event.button() == Qt.RightButton:
             if self.count_points > 2:
                 self.addLine(self.polygons[self.count_polygons][0][0], self.polygons[self.count_polygons][0][1],
@@ -138,7 +153,7 @@ class GraphicsScene(QGraphicsScene, ui.Ui_MainWindow):
             self.flag_pressed_shift = True
         pass
 
-class Main_window(QMainWindow, ui.Ui_MainWindow):
+class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
     def __init__(self):
         '''
         Конструктор
@@ -150,7 +165,7 @@ class Main_window(QMainWindow, ui.Ui_MainWindow):
         self.select_sleep = 0
         self.choose_colour = '#000000'
         self.background_colour = '#ffffff'
-        self.graph = GraphicsScene(self.polygons, self.choose_colour)
+        self.graph = GraphicsScene(self.polygons, self.choose_colour, self.label_choose_seed_point)
         self.show()
         self.add_to_ui()
         self.add_functions()
@@ -169,7 +184,15 @@ class Main_window(QMainWindow, ui.Ui_MainWindow):
         Добавление функционала к выполняемым задачам
         '''
         self.but_fill.clicked.connect(self.fill_area)
-        pass
+        self.but_choose_seed_point.clicked.connect(self.choose_seed_point)
+
+    def choose_seed_point(self):
+        '''
+        Выбор затравочной точки
+        '''
+        print(f"here")
+        self.label_choose_seed_point.setText('Выберите точку.')
+        self.graph.flag_choose_seed_point = True
 
     def delete_figure(self):
         '''
@@ -181,6 +204,7 @@ class Main_window(QMainWindow, ui.Ui_MainWindow):
         self.graph.count_points = 0
         self.graph.count_locked_polygons = 0
         self.graph.flag_fill_outline = False
+        self.graph.flag_choose_seed_point = False
         self.graph.cursor_x = 0; self.graph.cursor_y = 0
 
     def choose_colour_fill(self):
@@ -195,14 +219,21 @@ class Main_window(QMainWindow, ui.Ui_MainWindow):
             self.label_colour.setStyleSheet("background-color: " + self.graph.choose_colour_graph)
 
     def fill_area(self):
-        if len(self.polygons) == 0 or (self.graph.count_locked_polygons != len(self.polygons) or not self.graph.flag_fill_outline):
+        if len(self.polygons) == 0 or(self.graph.count_locked_polygons != len(self.polygons) or not self.graph.flag_fill_outline):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Область заполнения не задана.")
             msg.setWindowTitle("Ошибка")
             msg.exec_()
+        elif self.graph.flag_choose_seed_point == False:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Не выбрана затравочная точка.")
+            msg.setWindowTitle("Ошибка")
+            msg.exec_()
         else:
             #print(f"self.graph.choose_colour_graph = {self.graph.choose_colour_graph}")
+            self.graph.flag_choose_seed_point = False
             self.graph.pen_graph = QPen(QColor(self.graph.choose_colour_graph), 1, Qt.SolidLine)
             if self.radiobut_is_sleep.isChecked():
                 sleep = 1
@@ -228,111 +259,7 @@ class Main_window(QMainWindow, ui.Ui_MainWindow):
         '''
         Заполнение (с задержкой / без задержки)
         '''
-        #self.graph.clear()
-        for i in range(self.graph.count_polygons):
-            partition_wall_x = self.find_partition_wall(self.polygons[i])
-            self.fill_polygon(self.polygons[i], partition_wall_x, sleep)                                                        
-
-    def fill_polygon(self, current_polygon, partition_wall_x, sleep):
-        '''
-        Заполнение многоугольника
-        '''
-        len_polygon = len(current_polygon)
-        for i in range(len_polygon - 1):
-            self.fill_area_polygon(current_polygon[i], current_polygon[i + 1], partition_wall_x, sleep)
-        self.fill_area_polygon(current_polygon[-1], current_polygon[0], partition_wall_x, sleep)
-
-
-    def fill_area_polygon(self, start_link_point, end_link_point, partition_wall_x, sleep):
-        '''
-        Обработка каждого отрезка многоугольника на заполнение
-        '''
-        self.graph.updateImage()
-        start_point = copy(start_link_point)
-        end_point = copy(end_link_point)
-        #пропускаем горизонтальную линию
-        if start_point[1] == end_point[1]:
-            return
-
-        #меняем значения для того, чтобы идти снизу-вверх по отрезку
-        if start_point[1] > end_point[1]:
-            start_point, end_point = end_point, start_point
-
-        dx = (end_point[0] - start_point[0]) / (end_point[1] - start_point[1])
-        dy = 1
-
-        current_x = start_point[0]; current_y = start_point[1]
-        if sleep == 0:
-            self.process_fill_area_with_no_sleep(current_x, current_y, end_point, partition_wall_x, dx, dy)
-        else:
-            self.process_fill_area_with_sleep(current_x, current_y, end_point, partition_wall_x, dx, dy)
-
-    def process_fill_area_with_no_sleep(self, current_x, current_y, end_point, partition_wall_x, dx, dy):
-        '''
-        Заполнение без задержки
-        '''
-        while current_y < end_point[1]:
-            if current_x < partition_wall_x:
-                #если пересечение находится левее перегородки
-                for j in range(round(current_x) + 1, partition_wall_x):
-                    self.reverse_pixel(j, round(current_y))
-            elif current_x >= partition_wall_x:
-                #если пересечение находится правее перегородки
-                for j in range(partition_wall_x, round(current_x) + 1):
-                    self.reverse_pixel(j, round(current_y))
-            current_x += dx; current_y += dy
-
-    def process_fill_area_with_sleep(self, current_x, current_y, end_point, partition_wall_x, dx, dy):
-        '''
-        Заполнение с задержкой
-        '''
-        while current_y < end_point[1]:
-            if current_x < partition_wall_x:
-                #если пересечение находится левее перегородки
-                for j in range(round(current_x) + 1, partition_wall_x):
-                    self.reverse_pixel(j, round(current_y))
-            elif current_x >= partition_wall_x:
-                #если пересечение находится правее перегородки
-                for j in range(partition_wall_x, round(current_x) + 1):
-                    self.reverse_pixel(j, round(current_y))
-            current_x += dx; current_y += dy
-            QCoreApplication.processEvents(QEventLoop.AllEvents, 0)
-
-    def reverse_pixel(self, x, y):
-        '''
-        Инвертирование цвета пикселя
-        '''
-        pixel_colour = self.graph.getPixelColor(x, y)
-        self.graph.choose_colour_graph
-        if pixel_colour == self.graph.choose_colour_graph:
-            self.graph.pen_graph.setColor(QColor(self.background_colour))
-            self.graph.brush_graph = QBrush(QColor(self.background_colour))
-        elif pixel_colour == self.background_colour:
-            self.graph.pen_graph.setColor(QColor(self.graph.choose_colour_graph))
-            self.graph.brush_graph = QBrush(QColor(self.graph.choose_colour_graph))
-        self.graph.addLine(x, y, x, y, pen=self.graph.pen_graph)
-
-    def find_partition_wall(self, current_polygon):
-        '''
-        Поиск перегородки
-        '''
-        x_max, x_min = self.find_x_max_x_min(current_polygon)
-        middle = (x_max + x_min) / 2
-        return round(middle)
-
-    def find_x_max_x_min(self, current_polygon):
-        '''
-        Поиск x_max, x_min
-        '''
-        #print(f"current_polygon = {current_polygon}")
-        x_max = x_min = current_polygon[0][0]
-        len_current_polygon = len(current_polygon)
-        for i in range(1, len_current_polygon):
-            if current_polygon[i][0] > x_max:
-                x_max = current_polygon[i][0]
-            elif current_polygon[i][0] < x_min:
-                x_min = current_polygon[i][0]
-        return x_max, x_min
+        
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

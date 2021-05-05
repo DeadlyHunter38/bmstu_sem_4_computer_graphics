@@ -41,10 +41,16 @@
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
+        <verstretch>3</verstretch>
        </sizepolicy>
       </property>
       <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="baseSize">
        <size>
         <width>0</width>
         <height>0</height>
@@ -113,27 +119,69 @@
          </spacer>
         </item>
         <item row="4" column="0">
+         <widget class="QLabel" name="label_seed_point">
+          <property name="text">
+           <string>Затравочная точка</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QPushButton" name="but_choose_seed_point">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Выбрать затравочную
+точку</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLabel" name="label_choose_seed_point">
+          <property name="text">
+           <string>Затравочная точка
+не выбрана</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="2">
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="7" column="0">
          <widget class="QLabel" name="label_sleep">
           <property name="text">
            <string>Задержка отрисовки</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
+        <item row="8" column="0">
          <widget class="QRadioButton" name="radiobut_is_sleep">
           <property name="text">
            <string>С задержкой</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
+        <item row="9" column="0">
          <widget class="QRadioButton" name="radiobut_no_sleep">
           <property name="text">
            <string>Без задержки</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="0" colspan="2">
+        <item row="10" column="0" colspan="2">
          <widget class="QPushButton" name="but_fill">
           <property name="text">
            <string>Заполнить</string>
