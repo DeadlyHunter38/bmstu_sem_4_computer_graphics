@@ -9,7 +9,8 @@ from copy import copy, deepcopy
 from time import time
 
 import sys
-import lab_06_ui, stack
+import lab_06_ui
+from stack import stack_class
 
 ZERO_COLOUR = Qt.white
 
@@ -21,7 +22,7 @@ class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
         self.flag_pressed_shift = False
         self.flag_fill_outline = False
         self.flag_choose_seed_point = False
-        self.seed_point_x = 0; self.seed_point_y = 0
+        self.seed_point = [0, 0]
         self.count_points = 0
         self.count_polygons = 0
         self.radius_point_click = 1
@@ -108,12 +109,10 @@ class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
                                     self.pen_graph)
                 else:
                     print(f"here_2")
-                    self.seed_point_x = self.cursor_x
-                    self.seed_point_y = self.cursor_y
-                    self.addLine(self.seed_point_x, self.seed_point_y,
-                                self.seed_point_x, self.seed_point_y, 
+                    self.seed_point[0] = self.cursor_x; self.seed_point[1] = self.cursor_y
+                    self.addLine(self.seed_point[0], self.seed_point[1],
+                                self.seed_point[0], self.seed_point[1], 
                                 self.pen_graph)
-                    self.flag_choose_seed_point = False
                     self.label_choose_seed_point.setText('Точка выбрана.')
                                  
             else:
@@ -259,7 +258,65 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         '''
         Заполнение (с задержкой / без задержки)
         '''
-        
+        stack = stack_class(self.graph.seed_point)
+        while not stack.is_empty():
+            x, y = stack.pop()
+            self.graph.addLine(x, y, x, y, self.graph.pen_graph)
+
+            x_left = self.fill_left(x - 1, y)
+            x_right = self.fill_right(x + 1, y)
+
+            self.find_pixel(stack, x_right, x_left, y + 1)
+            self.find_pixel(stack, x_right, x_left, y - 1)
+            pass
+    
+    def fill_left(self, x, y):
+        '''
+        Заполнить строку слева
+        '''
+        self.graph.updateImage()
+        while self.graph.getPixelColor(x, y) != self.graph.choose_colour_graph:
+            self.graph.addLine(x, y, x, y, self.graph.pen_graph)
+            x -= 1
+        return x + 1
+
+    def fill_right(self, x, y):
+        '''
+        Заполнить строку справа
+        '''
+        self.graph.updateImage()
+        while self.graph.getPixelColor(x, y) != self.graph.choose_colour_graph:
+            self.graph.addLine(x, y, x, y, self.graph.pen_graph)
+            x += 1
+        return x - 1
+
+    def find_pixel(self, stack, x_right, x_left, y):
+        '''
+        Поиск нового затравочного пикселя
+        '''
+        self.graph.updateImage()
+        while x_left <= x_right:
+            flag_find_new_seed_pixel = False
+
+            while self.graph.getPixelColor(x_left, y) != self.graph.choose_colour_graph and x_left <= x_right:
+                flag_find_new_seed_pixel = True
+                x_left += 1
+            
+            if flag_find_new_seed_pixel == True:
+                if x_left == x_right and self.graph.getPixelColor(x_left, y) != self.graph.choose_colour_graph:
+                    stack.push([x_left, y])
+                else:
+                    stack.push([x_left - 1, y])
+                flag_find_new_seed_pixel == False
+            
+            x_temp = x_left
+            while self.graph.getPixelColor(x_left, y) == self.graph.choose_colour_graph and x_left < x_right:
+                x_left += 1
+            
+            if x_left == x_temp:
+                x_left += 1
+                
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
