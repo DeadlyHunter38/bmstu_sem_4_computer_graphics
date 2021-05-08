@@ -73,17 +73,40 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         '''
         Выполнение отсечения
         '''
-        #correctness = self.check_input_data()
-        #if correctness == True:
-        for i in range(len(self.graph.segments)):
-            print(f"I = {i}")
-            self.do_cut_off_segment(self.graph.segments[i], self.graph.rectangle_points)
-        pass
+        correctness = self.check_input_data()
+        if correctness == True:
+            for i in range(len(self.graph.segments)):
+                print(f"I = {i}")
+                self.do_cut_off_segment(self.graph.segments[i], self.graph.rectangle_points)
 
     def check_input_data(self):
-        pass
+        '''
+        Проверка корректности исходных данных
+        '''
+        flag_correctness = True
+        flag_error = False
+        text_error = ''
+        if self.graph.segments == []:
+            text_error = 'Отрезки не были введены.'
+            flag_error = True
+        elif self.graph.rectangle == None:
+            text_error = 'Отсекатель не был введен.'
+            flag_error = True
+        
+        if flag_error == True:
+            flag_correctness = False
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText(text_error)
+            msg.setWindowTitle("Ошибка")
+            msg.exec_()
+        
+        return flag_correctness
 
     def do_cut_off_segment(self, segment, rectangle):
+        '''
+        Выполнение отсечения для каждого отрезка
+        '''
         print(f"segment = {segment}")
         print(f"rectangle = {rectangle}")
         segment_bits_points = []
@@ -169,6 +192,9 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         pass
         
     def create_segment_bits(self, segment_point):
+        '''
+        Создать четырехразрядный код концов отрезка
+        '''
         print(f"segment_point = {segment_point}")
 
         segment_bits = 0b0000
@@ -194,6 +220,9 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         return segment_bits
 
     def find_vertical(self, segment, current_index, rectangle):
+        '''
+        Поиск вертикальных линий
+        '''
         if segment[current_index][1] > rectangle[screen_image.UP]:
             return [segment[current_index][0], rectangle[screen_image.UP]]
         elif segment[current_index][1] < rectangle[screen_image.DOWN]:
@@ -202,6 +231,9 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
             return segment[current_index]
 
     def draw_part_segment(self, result_points, colour_result):
+        '''
+        Отрисовка части отрезка
+        '''
         print(f"result_points = {result_points}")
         print(f"colour_result = {colour_result}")
         print(f"len_result_points = {len(result_points)}")

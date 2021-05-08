@@ -24,6 +24,9 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
     moved = pyqtSignal(QPointF)
 
     def __init__(self, segments):
+        '''
+        Конструктор
+        '''
         super().__init__()
         self.cursor_x = 0; self.cursor_y = 0
 
@@ -31,6 +34,7 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
         self.count_segments = -1
         self.count_points = 0
         self.flag_input_cut_off = False
+        self.flag_pressed_shift = False
         self.rectangle = None
         self.rectangle_points = [0, 0, 0, 0]
 
@@ -53,15 +57,41 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
                     self.count_segments += 1
                     self.count_points = 0
 
-                self.segments[self.count_segments].append([self.cursor_x, self.cursor_y])
-                self.addLine(self.segments[self.count_segments][self.count_points][0], self.segments[self.count_segments][self.count_points][1],
-                            self.segments[self.count_segments][self.count_points][0], self.segments[self.count_segments][self.count_points][1],
-                            self.pen_graph)
-
-                if self.count_points == 1:
-                    self.addLine(self.segments[self.count_segments][0][0], self.segments[self.count_segments][0][1],
-                                self.segments[self.count_segments][1][0], self.segments[self.count_segments][1][1],
+                if self.flag_pressed_shift == False:
+                    self.segments[self.count_segments].append([self.cursor_x, self.cursor_y])
+                    self.addLine(self.segments[self.count_segments][self.count_points][0], self.segments[self.count_segments][self.count_points][1],
+                                self.segments[self.count_segments][self.count_points][0], self.segments[self.count_segments][self.count_points][1],
                                 self.pen_graph)
+
+                print(f"self.segments = {self.segments}")
+                if self.count_points == 1:
+                    print(f"here_count_points")
+                    print(f"self.flag_pressed_shift = {self.flag_pressed_shift}")
+                    if self.flag_pressed_shift == True:
+                        #анализ горизонтальной и вертикальной линии
+                        dx = abs(self.cursor_x - self.segments[self.count_segments][-1][0])
+                        dy = abs(self.cursor_y - self.segments[self.count_segments][-1][1])
+                        if dx < dy:
+                            #рисуем горизонтальную линию
+                            self.segments[self.count_segments].append([self.segments[self.count_segments][-1][0], self.cursor_y])
+                            print(f"self.segments = {self.segments}")
+                            #self.polygons[self.count_polygons].append([self.polygons[self.count_polygons][-1][0], self.cursor_y])
+                            self.addLine(self.segments[self.count_segments][-2][0], self.segments[self.count_segments][-2][1],
+                                        self.segments[self.count_segments][-1][0], self.segments[self.count_segments][-1][1],
+                                        self.pen_graph)
+                            
+                        else:
+                            #рисуем вертикальную линию
+                            self.segments[self.count_segments].append([self.cursor_x, self.segments[self.count_segments][-1][1]])
+                            print(f"self.segments = {self.segments}")
+                            self.addLine(self.segments[self.count_segments][-2][0], self.segments[self.count_segments][-2][1],
+                                        self.segments[self.count_segments][-1][0], self.segments[self.count_segments][-1][1], 
+                                        self.pen_graph)
+                        self.flag_pressed_shift = False  
+                    else:
+                        self.addLine(self.segments[self.count_segments][0][0], self.segments[self.count_segments][0][1],
+                                    self.segments[self.count_segments][1][0], self.segments[self.count_segments][1][1],
+                                    self.pen_graph)
                 self.count_points += 1
             else:
                 #ввод отсекателя
@@ -116,3 +146,12 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
         self.rectangle_points[3] = max(self.y, p.y())
         self.rectangle.setRect(QRectF(QPointF(self.rectangle_points[0], self.rectangle_points[1]), 
                                       QPointF(self.rectangle_points[2], self.rectangle_points[3])))
+
+    def keyPressEvent(self, event):
+        '''
+        Обработка событий нажатия клавиш
+        '''
+        print(f"here_shift")
+        if event.key() == QtCore.Qt.Key_Shift:
+            if not (self.segments == [] or len(self.segments[self.count_segments]) % 2 == 0):
+                self.flag_pressed_shift = True
