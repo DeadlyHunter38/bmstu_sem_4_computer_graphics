@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(958, 637)
+        MainWindow.resize(707, 637)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -73,9 +73,6 @@ class Ui_MainWindow(object):
         self.but_choose_seed_point.setSizePolicy(sizePolicy)
         self.but_choose_seed_point.setObjectName("but_choose_seed_point")
         self.formLayout.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.but_choose_seed_point)
-        self.label_choose_seed_point = QtWidgets.QLabel(self.centralwidget)
-        self.label_choose_seed_point.setObjectName("label_choose_seed_point")
-        self.formLayout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.label_choose_seed_point)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.formLayout.setItem(6, QtWidgets.QFormLayout.SpanningRole, spacerItem2)
         self.label_sleep = QtWidgets.QLabel(self.centralwidget)
@@ -108,7 +105,6 @@ class Ui_MainWindow(object):
         self.label_seed_point.setText(_translate("MainWindow", "Затравочная точка"))
         self.but_choose_seed_point.setText(_translate("MainWindow", "Выбрать затравочную\n"
 "точку"))
-        self.label_choose_seed_point.setText(_translate("MainWindow", "Затравочная точка не выбрана"))
         self.label_sleep.setText(_translate("MainWindow", "Задержка отрисовки"))
         self.radiobut_is_sleep.setText(_translate("MainWindow", "С задержкой"))
         self.radiobut_no_sleep.setText(_translate("MainWindow", "Без задержки"))

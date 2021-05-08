@@ -15,9 +15,8 @@ from stack import stack_class
 ZERO_COLOUR = Qt.white
 
 class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
-    def __init__(self, polygons, choose_colour, label_choose_seed_point):
+    def __init__(self, polygons, choose_colour):
         super().__init__()
-        self.setSceneRect(0, 0, 743, 944)
         self.cursor_x = 0; self.cursor_y = 0
         self.flag_pressed_shift = False
         self.flag_fill_outline = False
@@ -27,56 +26,12 @@ class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
         self.count_polygons = 0
         self.radius_point_click = 1
         self.polygons = polygons
-        self.label_choose_seed_point = label_choose_seed_point
         self.choose_colour_graph = choose_colour
-        self.image = QImage(1000, 1500, QImage.Format_ARGB32_Premultiplied)
-        self.image.fill(ZERO_COLOUR)
         self.pen_graph = QPen(QColor(self.choose_colour_graph), 1, Qt.SolidLine)
-        self.brush_graph = QBrush(QColor(self.choose_colour_graph))
+        self.clean_pen = QPen(Qt.white, 1, Qt.SolidLine)
+
         self.count_locked_polygons = 0
-    
-    def addLine(self, x1, y1, x2, y2, pen):
-        # return QGraphicsScene.addLine(self, x1, y1, x2, y2, pen=pen)
-        def draw_point(x,y):
-            QGraphicsScene.addLine(self, x, y, x, y, pen=pen)
-            pass
-        
-        if (y1 > y2):
-            y1, y2, x1, x2 = y2, y1, x2, x1
 
-        def create_line_by_digital_differential_analyzer(x_start, y_start, x_end, y_end, flag_table):
-            #Цифровой дифференциальный анализатор
-            if (x_start == x_end) and (y_start == y_end):
-                if flag_table == 0: draw_point(x_start, y_start)
-            else:
-                l = 0; dx = 0; dy = 0
-                if abs(x_end - x_start) >= abs(y_end - y_start):
-                    l = abs(x_start - x_end)
-                else:
-                    l = abs(y_start - y_end)
-                dx = (x_end - x_start) / l; dy = (y_end - y_start) / l
-                x = x_start; y = y_start
-                i = 0
-                while i <= l:
-                    x_draw = round(x); y_draw = round(y)
-                    if flag_table == 0: draw_point(x_draw, y_draw)
-                    x += dx; y += dy
-                    i += 1
-        create_line_by_digital_differential_analyzer(x1, y1, x2, y2, 0)
-  
-    def updateImage(self):
-        '''
-        Перевести в QImage
-        '''
-        painter = QPainter()
-        paintDevice = QPixmap(int(self.width()), int(self.height()))
-        paintDevice.fill(Qt.white)
-
-        painter.begin(paintDevice)
-        self.render(painter)
-        painter.end()
-
-        self.image = paintDevice.toImage()
     
     def getPixelColor(self, x: int, y:int):
         '''
@@ -93,14 +48,13 @@ class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
             self.cursor_x = int(event.scenePos().x())
             self.cursor_y = int(event.scenePos().y())
             if self.flag_pressed_shift == False:
-                print(f"here_shift_false")
                 if self.flag_choose_seed_point == False:
                     self.addLine(self.cursor_x, self.cursor_y, self.cursor_x, self.cursor_y,
                                     self.pen_graph)
                     self.count_points += 1
                     if self.count_polygons == len(self.polygons):
                         self.polygons.append([])
-                    #print(f"self.count_polygons = {self.count_polygons}")
+
                     self.polygons[self.count_polygons].append([self.cursor_x, self.cursor_y])
                     
                     if self.count_points > 1:
@@ -108,12 +62,11 @@ class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
                                     self.polygons[self.count_polygons][-1][0], self.polygons[self.count_polygons][-1][1],
                                     self.pen_graph)
                 else:
-                    print(f"here_2")
                     self.seed_point[0] = self.cursor_x; self.seed_point[1] = self.cursor_y
                     self.addLine(self.seed_point[0], self.seed_point[1],
                                 self.seed_point[0], self.seed_point[1], 
                                 self.pen_graph)
-                    self.label_choose_seed_point.setText('Точка выбрана.')
+                    self.flag_choose_seed_point = False
                                  
             else:
                 #анализ горизонтальной и вертикальной линии             
@@ -148,6 +101,9 @@ class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
                 self.count_locked_polygons += 1
 
     def keyPressEvent(self, event):
+        '''
+        Обработка нажатия Shift
+        '''
         if event.key() == QtCore.Qt.Key_Shift:
             self.flag_pressed_shift = True
         pass
@@ -164,7 +120,7 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         self.select_sleep = 0
         self.choose_colour = '#000000'
         self.background_colour = '#ffffff'
-        self.graph = GraphicsScene(self.polygons, self.choose_colour, self.label_choose_seed_point)
+        self.graph = GraphicsScene(self.polygons, self.choose_colour)
         self.show()
         self.add_to_ui()
         self.add_functions()
@@ -175,6 +131,11 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         Добавление функционала к интерфейсу
         '''
         self.graphview.setScene(self.graph)
+        self.graphview.setSceneRect(0, 0, self.width(), self.height())
+
+        self.image = QImage(int(self.width()), int(self.height()), QImage.Format_ARGB32_Premultiplied)
+        self.image.fill(ZERO_COLOUR)
+
         self.but_clean_all.clicked.connect(lambda: self.delete_figure())
         self.but_choose_colour.clicked.connect(self.choose_colour_fill)
 
@@ -189,9 +150,26 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         '''
         Выбор затравочной точки
         '''
-        print(f"here")
-        self.label_choose_seed_point.setText('Выберите точку.')
+        #очистка предыдущей затравочной точки (если имеется)
+        if self.graph.seed_point[0] != 0 and self.graph.seed_point[1] != 0:
+            if self.is_pixel_in_fill_area(self.graph.seed_point[0], self.graph.seed_point[1]) == False:
+                self.graph.addLine(self.graph.seed_point[0], self.graph.seed_point[1],
+                            self.graph.seed_point[0], self.graph.seed_point[1], 
+                            self.graph.clean_pen)
+            self.graph.seed_point[0] = 0; self.graph.seed_point[1] = 0
         self.graph.flag_choose_seed_point = True
+
+    def is_pixel_in_fill_area(self, x, y):
+        '''
+        Находится ли затравочная точка в заполненной области
+        '''
+        flag_is_in = False
+        if (QColor(self.image.pixelColor(x + 1, y)).name() == self.graph.choose_colour_graph and
+           QColor(self.image.pixelColor(x - 1, y)).name() == self.graph.choose_colour_graph and
+           QColor(self.image.pixelColor(x, y + 1)).name() == self.graph.choose_colour_graph and
+           QColor(self.image.pixelColor(x, y - 1)).name() == self.graph.choose_colour_graph):
+            flag_is_in = True
+        return flag_is_in
 
     def delete_figure(self):
         '''
@@ -204,7 +182,12 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         self.graph.count_locked_polygons = 0
         self.graph.flag_fill_outline = False
         self.graph.flag_choose_seed_point = False
+        self.flag_choose_seed_point = False
         self.graph.cursor_x = 0; self.graph.cursor_y = 0
+        self.graph.seed_point[0] = 0; self.graph.seed_point[1] = 0
+
+        self.image = QImage(int(self.width()), int(self.height()), QImage.Format_ARGB32_Premultiplied)
+        self.image.fill(ZERO_COLOUR)
 
     def choose_colour_fill(self):
         '''
@@ -214,24 +197,22 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         if choose_colour.isValid():
             self.graph.choose_colour_graph = choose_colour.name()
             self.graph.pen_graph = QPen(QColor(self.graph.choose_colour_graph), 1, Qt.SolidLine)
-            #print(f"self.graph.choose_colour_graph = {self.graph.choose_colour_graph}")
             self.label_colour.setStyleSheet("background-color: " + self.graph.choose_colour_graph)
 
     def fill_area(self):
-        if len(self.polygons) == 0 or(self.graph.count_locked_polygons != len(self.polygons) or not self.graph.flag_fill_outline):
+        if len(self.polygons) == 0 or (self.graph.count_locked_polygons != len(self.polygons) or not self.graph.flag_fill_outline):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Область заполнения не задана.")
             msg.setWindowTitle("Ошибка")
             msg.exec_()
-        elif self.graph.flag_choose_seed_point == False:
+        elif self.graph.seed_point[0] == 0 and self.graph.seed_point[1] == 0:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Не выбрана затравочная точка.")
             msg.setWindowTitle("Ошибка")
             msg.exec_()
         else:
-            #print(f"self.graph.choose_colour_graph = {self.graph.choose_colour_graph}")
             self.graph.flag_choose_seed_point = False
             self.graph.pen_graph = QPen(QColor(self.graph.choose_colour_graph), 1, Qt.SolidLine)
             if self.radiobut_is_sleep.isChecked():
@@ -244,7 +225,7 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
                 end_time = time()
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
-                msg.setText("Общее время заполнения: "+ str(end_time - start_time) + "c.")
+                msg.setText("Общее время заполнения: "+ str(round(end_time - start_time, 6)) + "c.")
                 msg.setWindowTitle("Сведения")
                 msg.exec_()
             else:
@@ -258,59 +239,84 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         '''
         Заполнение (с задержкой / без задержки)
         '''
+        self.draw_edges()
+        
+        pixmap = QPixmap()
+        painter = QPainter()
+        painter.begin(self.image)
+        painter.setPen(self.graph.pen_graph)
+
         stack = stack_class(self.graph.seed_point)
         while not stack.is_empty():
             x, y = stack.pop()
-            self.graph.addLine(x, y, x, y, self.graph.pen_graph)
+            painter.drawPoint(x, y)
 
-            x_left = self.fill_left(x - 1, y)
-            x_right = self.fill_right(x + 1, y)
+            x_left = self.fill_left(x - 1, y, painter)
+            x_right = self.fill_right(x + 1, y, painter)
 
-            self.find_pixel(stack, x_right, x_left, y + 1)
-            self.find_pixel(stack, x_right, x_left, y - 1)
-            pass
+            self.find_pixel(stack, x_right, x_left, y + 1, painter)
+            self.find_pixel(stack, x_right, x_left, y - 1, painter)
+            
+        pixmap.convertFromImage(self.image)
+        self.graph.addPixmap(pixmap)
+        self.draw_edges()
+        painter.end()
+
+    def draw_edges(self):
+        '''
+        Отрисовка границ на Image для корректного считывания пикселей
+        '''
+        painter_colour = self.graph.choose_colour_graph
+        painter = QPainter()
+        painter.begin(self.image)
+        painter.setPen(QPen(QColor(painter_colour)))
+
+        for i in range(len(self.graph.polygons)):
+            for j in range(len(self.graph.polygons[i]) - 1):
+                painter.drawLine(self.graph.polygons[i][j][0], self.graph.polygons[i][j][1],
+                                 self.graph.polygons[i][j+1][0], self.graph.polygons[i][j+1][1])
+            painter.drawLine(self.graph.polygons[i][0][0], self.graph.polygons[i][0][1],
+                             self.graph.polygons[i][-1][0], self.graph.polygons[i][-1][1])
+        painter.end()
     
-    def fill_left(self, x, y):
+    def fill_left(self, x, y, painter):
         '''
         Заполнить строку слева
         '''
-        self.graph.updateImage()
-        while self.graph.getPixelColor(x, y) != self.graph.choose_colour_graph:
-            self.graph.addLine(x, y, x, y, self.graph.pen_graph)
+        while QColor(self.image.pixelColor(x, y)).name() != self.graph.choose_colour_graph:
+            painter.drawPoint(x, y)
             x -= 1
         return x + 1
 
-    def fill_right(self, x, y):
+    def fill_right(self, x, y, painter):
         '''
         Заполнить строку справа
         '''
-        self.graph.updateImage()
-        while self.graph.getPixelColor(x, y) != self.graph.choose_colour_graph:
-            self.graph.addLine(x, y, x, y, self.graph.pen_graph)
+        while QColor(self.image.pixelColor(x, y)).name() != self.graph.choose_colour_graph:
+            painter.drawPoint(x, y)
             x += 1
         return x - 1
 
-    def find_pixel(self, stack, x_right, x_left, y):
+    def find_pixel(self, stack, x_right, x_left, y, painter):
         '''
         Поиск нового затравочного пикселя
         '''
-        self.graph.updateImage()
         while x_left <= x_right:
             flag_find_new_seed_pixel = False
 
-            while self.graph.getPixelColor(x_left, y) != self.graph.choose_colour_graph and x_left <= x_right:
+            while QColor(self.image.pixelColor(x_left, y)).name() != self.graph.choose_colour_graph and x_left <= x_right:
                 flag_find_new_seed_pixel = True
                 x_left += 1
             
             if flag_find_new_seed_pixel == True:
-                if x_left == x_right and self.graph.getPixelColor(x_left, y) != self.graph.choose_colour_graph:
+                if x_left == x_right and QColor(self.image.pixelColor(x_left, y)).name() != self.graph.choose_colour_graph:
                     stack.push([x_left, y])
                 else:
                     stack.push([x_left - 1, y])
                 flag_find_new_seed_pixel == False
             
             x_temp = x_left
-            while self.graph.getPixelColor(x_left, y) == self.graph.choose_colour_graph and x_left < x_right:
+            while QColor(self.image.pixelColor(x_left, y)).name() == self.graph.choose_colour_graph and x_left < x_right:
                 x_left += 1
             
             if x_left == x_temp:

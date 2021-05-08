@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>958</width>
+    <width>707</width>
     <height>637</height>
    </rect>
   </property>
@@ -136,14 +136,6 @@
           <property name="text">
            <string>Выбрать затравочную
 точку</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLabel" name="label_choose_seed_point">
-          <property name="text">
-           <string>Затравочная точка
-не выбрана</string>
           </property>
          </widget>
         </item>
