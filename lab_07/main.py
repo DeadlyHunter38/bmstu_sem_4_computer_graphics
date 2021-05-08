@@ -81,7 +81,6 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
             rectangle.setRect(QRectF(QPointF(self.graph.rectangle_points[0] + 1, self.graph.rectangle_points[1] + 1), 
                                       QPointF(self.graph.rectangle_points[2] - 1, self.graph.rectangle_points[3] - 1)))
             for i in range(len(self.graph.segments)):
-                print(f"I = {i}")
                 self.do_cut_off_segment(self.graph.segments[i], self.graph.rectangle_points)
 
     def check_input_data(self):
@@ -112,20 +111,12 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         '''
         Выполнение отсечения для каждого отрезка
         '''
-        print(f"segment = {segment}")
-        print(f"rectangle = {rectangle}")
         segment_bits_points = []
         segment_bits_points.append(self.create_segment_bits(segment[0]))
         segment_bits_points.append(self.create_segment_bits(segment[1]))
-        print(bin(segment_bits_points[0])[2:].zfill(8))
-        print(bin(segment_bits_points[1])[2:].zfill(8))
-        #print(f"segment_bits[0] = {format(int(bin(segment_bits_points[0])), '04b')}")
-        #print(f"segment_bits[1] = {bin(segment_bits_points[1])}")
         
         #отрезок полностью невидим
-        print(f"segment_bits_points[0] & segment_bits_points[1] = {bin(segment_bits_points[0] & segment_bits_points[1])[2:].zfill(8)}")
         if segment_bits_points[0] & segment_bits_points[1]:
-            print(f"here")
             return
 
         #отрезок полностью видим
@@ -137,19 +128,16 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         result_points = []
         #проверка видимости первой вершины
         if segment_bits_points[0] == 0:
-            print(f"first is visible")
             current_index_point = 1
             result_points.append(segment[0])
 
         #проверка видимости второй вершины
         elif segment_bits_points[1] == 0:
-            print(f"second is visible")
             current_index_point = 1
             result_points.append(segment[1])
             segment_bits_points.reverse()
             segment.reverse()
 
-        print(f"current_index = {current_index_point}")
         while current_index_point < 2:
             if segment[0][0] == segment[1][0]:
                 result_points.append(self.find_vertical(segment, current_index_point, rectangle))
@@ -158,14 +146,12 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
             m = (segment[1][1] - segment[0][1]) / (segment[1][0] - segment[0][0])
 
             if segment_bits_points[current_index_point] & MASK_LEFT:
-                print(f"MASK_LEFT")
                 y = round(m * (rectangle[screen_image.LEFT] - segment[current_index_point][0]) + segment[current_index_point][1])
                 if y >= rectangle[screen_image.DOWN] and y <= rectangle[screen_image.UP]:
                     result_points.append([rectangle[screen_image.LEFT], y])
                     current_index_point += 1
                     continue
             elif segment_bits_points[current_index_point] & MASK_RIGHT:
-                print(f"MASK_RIGHT")
                 y = round(m * (rectangle[screen_image.RIGHT]  - segment[current_index_point][0]) + segment[current_index_point][1])
                 if y >= rectangle[screen_image.DOWN] and y <= rectangle[screen_image.UP]:
                     result_points.append([rectangle[screen_image.RIGHT], y])
@@ -177,14 +163,12 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
                 continue
 
             if segment_bits_points[current_index_point] & MASK_UP:
-                print(f"MASK_UP")
                 x = round((rectangle[screen_image.UP] - segment[current_index_point][1]) / m + segment[current_index_point][0])
                 if x >= rectangle[screen_image.LEFT] and x <= rectangle[screen_image.RIGHT]:
                     result_points.append([x, rectangle[screen_image.UP]])
                     current_index_point += 1
                     continue
             elif segment_bits_points[current_index_point] & MASK_DOWN:
-                print(f"MASK_DOWN")
                 x = round((rectangle[screen_image.DOWN]  - segment[current_index_point][1]) / m + segment[current_index_point][0])
                 if x >= rectangle[screen_image.LEFT] and x <= rectangle[screen_image.RIGHT]:
                     result_points.append([x, rectangle[screen_image.DOWN]])
@@ -199,28 +183,16 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         '''
         Создать четырехразрядный код концов отрезка
         '''
-        print(f"segment_point = {segment_point}")
-
         segment_bits = 0b0000
-        print(f"bin(segment_bits) = {bin(segment_bits)}")
         if segment_point[0] < self.graph.rectangle_points[screen_image.LEFT]:
-            print(f"LEFT")
             segment_bits |= MASK_LEFT
-            print(f"bin(segment_bits) = {bin(segment_bits)}")
         if segment_point[0] > self.graph.rectangle_points[screen_image.RIGHT]:
-            print(f"RIGHT")
             segment_bits |= MASK_RIGHT
-            print(f"bin(segment_bits) = {bin(segment_bits)}")
         if segment_point[1] > self.graph.rectangle_points[screen_image.UP]:
-            print(f"UP")
             segment_bits |= MASK_UP
-            print(f"bin(segment_bits) = {bin(segment_bits)}")
         if segment_point[1] < self.graph.rectangle_points[screen_image.DOWN]:
-            print(f"DOWN")
             segment_bits |= MASK_DOWN
-            print(f"bin(segment_bits) = {bin(segment_bits)}")
-        print(f"RESULT_bin(segment_bits) = {bin(segment_bits)}")
-        print()
+ 
         return segment_bits
 
     def find_vertical(self, segment, current_index, rectangle):
@@ -238,9 +210,6 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         '''
         Отрисовка части отрезка
         '''
-        print(f"result_points = {result_points}")
-        print(f"colour_result = {colour_result}")
-        print(f"len_result_points = {len(result_points)}")
         if len(result_points) > 1:
             self.graph.addLine(result_points[0][0], result_points[0][1], result_points[1][0],
                                 result_points[1][1], self.graph.pen_result)
