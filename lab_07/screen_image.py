@@ -41,6 +41,8 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
         self.pen_graph = QPen(QColor(COLOUR_SEGMENT), 1, Qt.SolidLine)
         self.pen_cut_off = QPen(QColor(COLOUR_CUT_OFF))
         self.pen_result = QPen(QColor(COLOUR_RESULT))
+        self.clear_pen = QPen(Qt.white, 1, Qt.SolidLine)
+        self.clear_brush = QBrush(Qt.white)
 
     def mousePressEvent(self, event):
         '''

@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPainter, QBrush, QPen, QPixmap, QPalette, QColor, QImage
-from PyQt5.QtCore import QCoreApplication, QEventLoop, Qt
+from PyQt5.QtCore import QCoreApplication, QEventLoop, Qt, QPointF, QRectF
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QGraphicsScene
 
 import sys
@@ -75,6 +75,11 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         '''
         correctness = self.check_input_data()
         if correctness == True:
+            rectangle = self.graph.addRect(QRectF(QPointF(self.graph.x - 1, self.graph.y - 1), 
+                                             QPointF(self.graph.x - 1, self.graph.y - 1)),
+                                             self.graph.clear_pen, self.graph.clear_brush)
+            rectangle.setRect(QRectF(QPointF(self.graph.rectangle_points[0] + 1, self.graph.rectangle_points[1] + 1), 
+                                      QPointF(self.graph.rectangle_points[2] - 1, self.graph.rectangle_points[3] - 1)))
             for i in range(len(self.graph.segments)):
                 print(f"I = {i}")
                 self.do_cut_off_segment(self.graph.segments[i], self.graph.rectangle_points)
@@ -189,7 +194,6 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
             current_index_point += 1
         if result_points != []:
             self.draw_part_segment(result_points, screen_image.COLOUR_RESULT)
-        pass
         
     def create_segment_bits(self, segment_point):
         '''
