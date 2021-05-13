@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPainter, QBrush, QPen, QPixmap, QPolygon, QPainterPath, QMouseEvent, QColor, QImage
 from PyQt5.QtCore import QCoreApplication, QEventLoop, QPoint, QPointF, Qt
 from PyQt5.QtWidgets import QGraphicsItem, QMessageBox, QLineEdit, QPushButton, QLabel, QGraphicsScene,\
-                            QGraphicsView, QWidget, QMenu, QMainWindow, QAction, QColorDialog
+                            QGraphicsView, QWidget, QMenu, QMainWindow, QAction, QColorDialog, QApplication
 import matplotlib.colors as colors
 from PIL import ImageColor
 from copy import copy, deepcopy
@@ -13,9 +13,13 @@ import lab_06_ui
 from stack import stack_class
 
 ZERO_COLOUR = Qt.white
+SCREEN_WIDTH, SCREEN_HEIGHT = 1920, 1080
 
 class GraphicsScene(QGraphicsScene, lab_06_ui.Ui_MainWindow):
     def __init__(self, polygons, choose_colour):
+        '''
+        Конструктор
+        '''
         super().__init__()
         self.cursor_x = 0; self.cursor_y = 0
         self.flag_pressed_shift = False
@@ -124,17 +128,20 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         self.show()
         self.add_to_ui()
         self.add_functions()
+        print(f"size_height, size_width = {self.width(), self.height()}")
+        print(f"size_height, size_width = {self.graphview.width(), self.graphview.height()}")
         #список координат x и у пересечения активной строки и ребра
 
     def add_to_ui(self):
         '''
         Добавление функционала к интерфейсу
         '''
-        self.graphview.setScene(self.graph)
-        self.graphview.setSceneRect(0, 0, self.width(), self.height())
+        self.graphview.setSceneRect(0, 0, self.graphview.width(), self.graphview.height())
 
-        self.image = QImage(int(self.width()), int(self.height()), QImage.Format_ARGB32_Premultiplied)
+        self.image = QImage(SCREEN_WIDTH, SCREEN_HEIGHT, QImage.Format_ARGB32_Premultiplied)
         self.image.fill(ZERO_COLOUR)
+        #self.graph.addItem(self.image)
+        self.graphview.setScene(self.graph)
 
         self.but_clean_all.clicked.connect(lambda: self.delete_figure())
         self.but_choose_colour.clicked.connect(self.choose_colour_fill)
@@ -145,6 +152,17 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         '''
         self.but_fill.clicked.connect(self.fill_area)
         self.but_choose_seed_point.clicked.connect(self.choose_seed_point)
+
+    def move_to_left_bottom_corner(window):
+        '''
+        Перемещение компактной формы окна в левый верхний угол
+        '''
+        screen_geometry = QApplication.desktop().availableGeometry()
+        screen_size = (screen_geometry.width(), screen_geometry.height())
+        window_size = (window.frameSize().width(), window.frameSize().height())
+        x = screen_size[0] - window_size[0]
+        y = screen_size[1] - window_size[1]
+        window.move(-x, -y)
 
     def choose_seed_point(self):
         '''
@@ -186,7 +204,7 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
         self.graph.cursor_x = 0; self.graph.cursor_y = 0
         self.graph.seed_point[0] = 0; self.graph.seed_point[1] = 0
 
-        self.image = QImage(int(self.width()), int(self.height()), QImage.Format_ARGB32_Premultiplied)
+        #self.image = QImage(SCREEN_WIDTH, SCREEN_HEIGHT, QImage.Format_ARGB32_Premultiplied)
         self.image.fill(ZERO_COLOUR)
 
     def choose_colour_fill(self):
@@ -200,16 +218,20 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
             self.label_colour.setStyleSheet("background-color: " + self.graph.choose_colour_graph)
 
     def fill_area(self):
+        text = ''
+        flag_error = False
         if len(self.polygons) == 0 or (self.graph.count_locked_polygons != len(self.polygons) or not self.graph.flag_fill_outline):
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setText("Область заполнения не задана.")
-            msg.setWindowTitle("Ошибка")
-            msg.exec_()
+            flag_error = True
+            text = "Область заполнения не задана."
         elif self.graph.seed_point[0] == 0 and self.graph.seed_point[1] == 0:
+            flag_error = True          
+            text = "Не выбрана затравочная точка."
+            
+
+        if flag_error:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
-            msg.setText("Не выбрана затравочная точка.")
+            msg.setText(text)
             msg.setWindowTitle("Ошибка")
             msg.exec_()
         else:
@@ -238,14 +260,14 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
     def fill(self, sleep):
         '''
         Заполнение (с задержкой / без задержки)
-        '''
-        self.draw_edges()
-        
+        ''' 
         pixmap = QPixmap()
         painter = QPainter()
         painter.begin(self.image)
         painter.setPen(self.graph.pen_graph)
+        painter.drawImage(0, 0, self.image)
 
+        self.draw_edges(painter)
         stack = stack_class(self.graph.seed_point)
         while not stack.is_empty():
             x, y = stack.pop()
@@ -256,28 +278,26 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
 
             self.find_pixel(stack, x_right, x_left, y + 1, painter)
             self.find_pixel(stack, x_right, x_left, y - 1, painter)
+            if sleep:
+                pixmap.convertFromImage(self.image)
+                self.graph.addPixmap(pixmap)
+                QCoreApplication.processEvents()
             
         pixmap.convertFromImage(self.image)
         self.graph.addPixmap(pixmap)
-        self.draw_edges()
+        self.draw_edges(painter)
         painter.end()
 
-    def draw_edges(self):
+    def draw_edges(self, painter):
         '''
         Отрисовка границ на Image для корректного считывания пикселей
         '''
-        painter_colour = self.graph.choose_colour_graph
-        painter = QPainter()
-        painter.begin(self.image)
-        painter.setPen(QPen(QColor(painter_colour)))
-
         for i in range(len(self.graph.polygons)):
             for j in range(len(self.graph.polygons[i]) - 1):
                 painter.drawLine(self.graph.polygons[i][j][0], self.graph.polygons[i][j][1],
                                  self.graph.polygons[i][j+1][0], self.graph.polygons[i][j+1][1])
             painter.drawLine(self.graph.polygons[i][0][0], self.graph.polygons[i][0][1],
                              self.graph.polygons[i][-1][0], self.graph.polygons[i][-1][1])
-        painter.end()
     
     def fill_left(self, x, y, painter):
         '''
@@ -327,4 +347,6 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     main_window = Main_window()
+    main_window.move(main_window.width() * -3, 0)
+    Main_window.move_to_left_bottom_corner(main_window)
     sys.exit(app.exec_())

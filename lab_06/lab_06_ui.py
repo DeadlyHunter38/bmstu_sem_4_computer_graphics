@@ -13,8 +13,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(707, 637)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        MainWindow.resize(816, 510)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
@@ -32,7 +32,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.graphview = QtWidgets.QGraphicsView(self.centralwidget)
         self.graphview.setEnabled(True)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(3)
         sizePolicy.setHeightForWidth(self.graphview.sizePolicy().hasHeightForWidth())
@@ -41,6 +41,8 @@ class Ui_MainWindow(object):
         self.graphview.setBaseSize(QtCore.QSize(0, 0))
         self.graphview.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.graphview.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.graphview.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
+        self.graphview.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.graphview.setObjectName("graphview")
         self.horizontalLayout_2.addWidget(self.graphview)
         self.verticalLayout = QtWidgets.QVBoxLayout()
@@ -92,6 +94,7 @@ class Ui_MainWindow(object):
         self.but_clean_all.setObjectName("but_clean_all")
         self.verticalLayout.addWidget(self.but_clean_all)
         self.horizontalLayout_2.addLayout(self.verticalLayout)
+        self.horizontalLayout_2.setStretch(0, 1)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -99,7 +102,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Лабораторная №6"))
         self.label.setText(_translate("MainWindow", "Алгоритм заполнения с перегородкой"))
         self.but_choose_colour.setText(_translate("MainWindow", "Выбрать цвет"))
         self.label_seed_point.setText(_translate("MainWindow", "Затравочная точка"))
