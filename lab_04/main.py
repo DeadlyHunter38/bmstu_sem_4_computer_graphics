@@ -377,7 +377,7 @@ class Main_window(QMainWindow, lab_04_ui.Ui_MainWindow):
         x = 0; y = 0
         t = 0
         limit = pi / 2
-        step_t = 1 / big_halfaxis
+        step_t = 1 / max(big_halfaxis, low_halfaxis)
         while t <= limit:
             x = a * cos(t)
             y = b * sin(t)
