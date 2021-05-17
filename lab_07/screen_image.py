@@ -65,10 +65,7 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
                                 self.segments[self.count_segments][self.count_points][0], self.segments[self.count_segments][self.count_points][1],
                                 self.pen_graph)
 
-                print(f"self.segments = {self.segments}")
                 if self.count_points == 1:
-                    print(f"here_count_points")
-                    print(f"self.flag_pressed_shift = {self.flag_pressed_shift}")
                     if self.flag_pressed_shift == True:
                         #анализ горизонтальной и вертикальной линии
                         dx = abs(self.cursor_x - self.segments[self.count_segments][-1][0])
@@ -76,7 +73,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
                         if dx < dy:
                             #рисуем горизонтальную линию
                             self.segments[self.count_segments].append([self.segments[self.count_segments][-1][0], self.cursor_y])
-                            print(f"self.segments = {self.segments}")
                             #self.polygons[self.count_polygons].append([self.polygons[self.count_polygons][-1][0], self.cursor_y])
                             self.addLine(self.segments[self.count_segments][-2][0], self.segments[self.count_segments][-2][1],
                                         self.segments[self.count_segments][-1][0], self.segments[self.count_segments][-1][1],
@@ -85,7 +81,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
                         else:
                             #рисуем вертикальную линию
                             self.segments[self.count_segments].append([self.cursor_x, self.segments[self.count_segments][-1][1]])
-                            print(f"self.segments = {self.segments}")
                             self.addLine(self.segments[self.count_segments][-2][0], self.segments[self.count_segments][-2][1],
                                         self.segments[self.count_segments][-1][0], self.segments[self.count_segments][-1][1], 
                                         self.pen_graph)
@@ -115,7 +110,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
             cursor_position = event.scenePos()
             self.released.emit(cursor_position)
             super().mouseReleaseEvent(event)
-            print(f"self.rectangle_points = {self.rectangle_points}")
             self.flag_input_cut_off = False
  
     def mouseMoveEvent(self, event):
@@ -153,7 +147,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_07_ui.Ui_MainWindow):
         '''
         Обработка событий нажатия клавиш
         '''
-        print(f"here_shift")
         if event.key() == QtCore.Qt.Key_Shift:
             if not (self.segments == [] or len(self.segments[self.count_segments]) % 2 == 0):
                 self.flag_pressed_shift = True

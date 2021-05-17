@@ -60,7 +60,7 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         self.graph.rectangle = None
         self.graph.flag_input_cut_off = False
 
-        self.image = QImage(self.graph.width(), self.graph.height(), QImage.Format_ARGB32_Premultiplied)
+        self.image = QImage(int(self.graph.width()), int(self.graph.height()), QImage.Format_ARGB32_Premultiplied)
         self.image.fill(self.bg_colour)
 
     def input_cut_off(self):
@@ -115,11 +115,11 @@ class Main_window(QMainWindow, lab_07_ui.Ui_MainWindow):
         segment_bits_points.append(self.create_segment_bits(segment[0]))
         segment_bits_points.append(self.create_segment_bits(segment[1]))
         
-        #отрезок полностью невидим
+        #отрезок полностью видим
         if segment_bits_points[0] & segment_bits_points[1]:
             return
 
-        #отрезок полностью видим
+        #отрезок полностью невидим
         if segment_bits_points[0] == 0 and segment_bits_points[1] == 0:
             self.draw_part_segment(segment, screen_image.COLOUR_RESULT)
             return
