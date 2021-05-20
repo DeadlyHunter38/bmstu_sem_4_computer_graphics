@@ -280,10 +280,12 @@ class Main_window(QMainWindow, lab_06_ui.Ui_MainWindow):
             self.find_pixel(stack, x_right, x_left, y - 1, painter)
             if sleep:
                 pixmap.convertFromImage(self.image)
+                self.graph.clear()
                 self.graph.addPixmap(pixmap)
-                QCoreApplication.processEvents()
+                QCoreApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents, 0)
             
         pixmap.convertFromImage(self.image)
+        self.graph.clear()
         self.graph.addPixmap(pixmap)
         self.draw_edges(painter)
         painter.end()
