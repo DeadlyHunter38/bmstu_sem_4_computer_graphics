@@ -13,14 +13,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(640, 480)
+        MainWindow.resize(640, 552)
         MainWindow.setStyleSheet("background-color: #cccccc")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.graphicsView = QtWidgets.QGraphicsView(self.centralwidget)
+        self.graphicsView.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.graphicsView.setStyleSheet("background-color: #ffffff")
+        self.graphicsView.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.graphicsView.setObjectName("graphicsView")
         self.horizontalLayout.addWidget(self.graphicsView)
         self.verticalLayout = QtWidgets.QVBoxLayout()

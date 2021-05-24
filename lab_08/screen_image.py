@@ -28,7 +28,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_08_ui.Ui_MainWindow):
         Конструктор
         '''
         super().__init__()
-        print(f"here_constructor")
         self.cursor_x = 0; self.cursor_y = 0
 
         self.segments = segments
@@ -43,8 +42,7 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_08_ui.Ui_MainWindow):
         self.flag_input_cut_off = False
         self.flag_input_segments = False
         self.flag_pressed_shift = False
-        self.rectangle = None
-        self.rectangle_points = [0, 0, 0, 0]
+        self.flag_locked_cut_off = False
 
         self.pen_graph = QPen(QColor(COLOUR_SEGMENT), 1, Qt.SolidLine)
         self.pen_cut_off = QPen(QColor(COLOUR_CUT_OFF))
@@ -56,8 +54,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_08_ui.Ui_MainWindow):
         '''
         Обработка нажатия мыши
         '''
-        print(f"self.flag_input_cut_off = {self.flag_input_cut_off}")
-        print(f"self.flag_input_segments = {self.flag_input_segments}")
         if event.button() == Qt.LeftButton:
             if self.flag_input_cut_off == False:
                 if self.flag_input_segments == True:
@@ -73,7 +69,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_08_ui.Ui_MainWindow):
         Ввод отрезков на экране
         """
         #ввод линий
-        print(f"segments = {segments}")
         self.cursor_x = int(event.scenePos().x())
         self.cursor_y = int(event.scenePos().y())
 
@@ -83,9 +78,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_08_ui.Ui_MainWindow):
             count_points = 0
         elif self.flag_input_cut_off:
             count_segments += 1
-        print(f"count_segments = {count_segments}")
-        print(f"count_points = {count_points}")
-        print(f"segments = {segments}")
 
         if self.flag_pressed_shift == False:
             if self.flag_input_segments == True:
@@ -95,7 +87,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_08_ui.Ui_MainWindow):
                         screen_pen)
             else:
                 segments.append([self.cursor_x, self.cursor_y])
-        print(f"segments = {segments}")
 
         if count_points >= 1:
             if self.flag_pressed_shift == True:
@@ -122,8 +113,6 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_08_ui.Ui_MainWindow):
                                 segments[count_segments][1][0], segments[count_segments][1][1],
                                 screen_pen)
                 else:
-                    print(f"count_points = {count_points}")
-                    print(f"segments = {segments}")
                     self.addLine(segments[count_points - 1][0], segments[count_points - 1][1],
                                 segments[count_points][0], segments[count_points][1],
                                 screen_pen)
@@ -146,6 +135,47 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_08_ui.Ui_MainWindow):
             self.addLine(self.cut_off_segments[-1][0], self.cut_off_segments[-1][1],
                          self.cut_off_segments[0][0], self.cut_off_segments[0][1],
                          self.pen_cut_off)
+            self.flag_locked_cut_off = True
+
+    def is_polygon_convex(self):
+        """
+        Проверка многоугольника на выпуклость
+        """
+        flag_is_convex = True
+        first_vector = self.get_coordinates_vector(self.cut_off_segments[-1], self.cut_off_segments[0])
+        second_vector = self.get_coordinates_vector(self.cut_off_segments[0], self.cut_off_segments[1])
+        sign_mul_vectors = self.compulate_sign_mul_vectors(first_vector, second_vector)
+
+        if self.flag_locked_cut_off == True:
+            for i in range(len(self.cut_off_segments) - 2):
+                first_vector = self.get_coordinates_vector(self.cut_off_segments[i], self.cut_off_segments[i + 1])
+                second_vector = self.get_coordinates_vector(self.cut_off_segments[i + 1], self.cut_off_segments[i + 2])
+                current_sign_mul_vectors = self.compulate_sign_mul_vectors(first_vector, second_vector)
+                #если вект. произв. имеют разный знак или одно из них ноль
+                if current_sign_mul_vectors * sign_mul_vectors <= 0:
+                    flag_is_convex = False
+                    break
+
+        if flag_is_convex == True:
+            first_vector = self.get_coordinates_vector(self.cut_off_segments[i - 1], self.cut_off_segments[i])
+            second_vector = self.get_coordinates_vector(self.cut_off_segments[i], self.cut_off_segments[0])
+            if current_sign_mul_vectors * sign_mul_vectors <= 0:
+                flag_is_convex = False
+
+        return flag_is_convex
+
+    def get_coordinates_vector(self, point_1, point_2):
+        """
+        Получить координаты вектора
+        """
+        return [point_2[0] - point_1[0], point_2[1] - point_1[1]]
+
+    def compulate_sign_mul_vectors(self, first_vector, second_vector):
+        """
+        Вычислить векторное произведение и вернуть его знак
+        """
+        angle = first_vector[0] * second_vector[1] - first_vector[1] * second_vector[0]
+        return angle
 
     def keyPressEvent(self, event):
         '''
