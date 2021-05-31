@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>412</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Справка</string>
+  </property>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>421</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>15</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Справка по работе с приложением</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>50</y>
+     <width>621</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ввод исходного многоугольника:
+     1. Нажать на кнопку &quot;Многоугольник&quot;. 
+     2. Щелнуть мышкой по экрану ввода (постепенно будут появляться отрезки). 
+     3. Нажать на ПКМ - замкнуть фигуру.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>160</y>
+     <width>611</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ввод отсекателя (многоугольник):
+      1. Нажать на кнопку &quot;Отсекатель&quot;. 
+     2. Щелнуть мышкой по экрану ввода (постепенно будут появляться отрезки). 
+     3. Нажать на ПКМ - замкнуть фигуру.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>270</y>
+     <width>391</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Отсечение:
+     1.Ввести произвольный многоугольник
+     2.Ввести отсекатель (выпуклый многоугольник)
+     3.Нажать на кнопку &quot;Отсечь&quot;</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
