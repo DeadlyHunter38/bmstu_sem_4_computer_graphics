@@ -11,7 +11,7 @@
 | [Lab 06](https://github.com/DeadlyHunter38/bmstu_sem_4_computer_graphics/tree/master/lab_06)|Реализация и исследование алгоритма построчного затравочного заполнения| ✅|
 | [Lab 07](https://github.com/DeadlyHunter38/bmstu_sem_4_computer_graphics/tree/master/lab_07)| Отсечение отрезков регулярным отсекателем (простой алгоритм)| ✅|
 | [Lab 08](https://github.com/DeadlyHunter38/bmstu_sem_4_computer_graphics/tree/master/lab_08)|Отсечение отрезков произвольным выпуклым отсекателем (алгоритм Кируса - Бека)| ✅|
-| [Lab 09](https://github.com/DeadlyHunter38/bmstu_sem_4_computer_graphics/tree/master/lab_09)|Отсечение отрезков произвольным выпуклым отсекателем (алгоритм Сазерленда-Ходжмана)| |
+| [Lab 09](https://github.com/DeadlyHunter38/bmstu_sem_4_computer_graphics/tree/master/lab_09)|Отсечение отрезков произвольным выпуклым отсекателем (алгоритм Сазерленда-Ходжмана)| ✅|
 | [Lab 10](https://github.com/DeadlyHunter38/bmstu_sem_4_computer_graphics/tree/master/lab_10)|| |
 
 
