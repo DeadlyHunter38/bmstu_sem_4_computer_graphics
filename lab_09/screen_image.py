@@ -40,11 +40,11 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_09_ui.Ui_MainWindow):
         self.count_points_cut_off = 0
 
         self.flag_input_cut_off = False
-        self.flag_input_segments = False
+        self.flag_input_polygon = False
         self.flag_pressed_shift = False
 
         self.flag_locked_cut_off = False
-        self.flag_locked_input_polygon = None
+        self.flag_locked_input_polygon = False
 
         self.pen_graph = QPen(QColor(COLOUR_SEGMENT), 1, Qt.SolidLine)
         self.pen_cut_off = QPen(QColor(COLOUR_CUT_OFF))
@@ -58,13 +58,15 @@ class ScreenImage(QGraphicsScene, QMainWindow, lab_09_ui.Ui_MainWindow):
         '''
         if event.button() == Qt.LeftButton:
             if self.flag_input_cut_off == False:
-                if self.flag_input_segments == True:
+                if self.flag_input_polygon == True:
                     self.count_segments, self.count_points = self.input_segments_on_screen(event, self.input_polygon,
                                                             self.count_segments, self.count_points, self.pen_graph)                    
             elif self.flag_input_cut_off == True:
                 self.input_cut_off_on_screen(event)
         if event.button() == Qt.RightButton:
-            if self.flag_input_segments == True:
+            print(f"self.flag_input_polygon = {self.flag_input_polygon}")
+            print(f"here")
+            if self.flag_input_polygon == True:
                 self.flag_locked_input_polygon = self.lock_cut_off(self.input_polygon, self.count_points, self.pen_graph)
             elif self.flag_input_cut_off == True:
                 self.flag_locked_cut_off = self.lock_cut_off(self.cut_off_polygon,
