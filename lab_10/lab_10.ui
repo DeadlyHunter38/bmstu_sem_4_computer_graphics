@@ -10,6 +10,12 @@
     <height>744</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Лабораторная работа 10</string>
   </property>
@@ -18,7 +24,7 @@
     <item>
      <widget class="QGraphicsView" name="graphicsView">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -30,7 +36,7 @@
        </size>
       </property>
       <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>
@@ -99,7 +105,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_x">
          <attribute name="title">
@@ -155,8 +161,20 @@
           </item>
           <item row="2" column="1">
            <widget class="QDoubleSpinBox" name="spinbox_step_x">
-            <property name="value">
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>0.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep">
              <double>0.010000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.100000000000000</double>
             </property>
            </widget>
           </item>
@@ -217,7 +235,13 @@
           <item row="2" column="1">
            <widget class="QDoubleSpinBox" name="spinbox_step_z">
             <property name="minimum">
-             <double>0.000000000000000</double>
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
             </property>
             <property name="value">
              <double>0.100000000000000</double>
@@ -329,6 +353,12 @@
       </item>
       <item row="13" column="0" colspan="2">
        <widget class="QPushButton" name="but_clean_all">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Очистить</string>
         </property>

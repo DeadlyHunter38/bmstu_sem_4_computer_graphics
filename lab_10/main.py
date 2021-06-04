@@ -11,7 +11,7 @@ from typing import List
 from functions import *
 from copy import deepcopy
 
-FUNCTIONS = ['cos(x) * sin(z)']
+FUNCTIONS = ['cos(x) * sin(z)', 'cos(x)', 'x + z']
 
 class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
     def __init__(self):
@@ -48,11 +48,9 @@ class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
         """
         Выбор изображаемых функций
         """
-        self.box_functions.addItem("cos(x) * sin(z)")
-        self.box_functions.addItem("2")
-        self.box_functions.addItem("3")
-        self.box_functions.addItem("4")
-        self.box_functions.addItem("5")
+        self.box_functions.addItem(FUNCTIONS[0])
+        self.box_functions.addItem(FUNCTIONS[1])
+        self.box_functions.addItem(FUNCTIONS[2])
 
     def clean_all(self):
         """
@@ -66,13 +64,9 @@ class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
         Отрисовка трехмерной поверхности
         """
         self.screen_image.clear()
-        functions = [f1]
+        functions = [f1, f2, f3]
         self.get_data()
         index_function = self.get_index_function()
-        print(f"self.screen_image.width = {self.graphicsView.width()}")
-        #self.screen_image.draw_line(100, 100, 500, 500)
-        print(f"index_function = {index_function}")
-        print(f"functions[0] = {functions[0]}")
         self.draw_floating_horizon(functions[index_function], self.borders_x, self.borders_z,
                                    self.step_x, self.step_z, self.angles, int(self.screen_image.width()), int(self.screen_image.height()))
         pass
@@ -82,7 +76,6 @@ class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
         Получить начальные значения
         """
         self.function = self.box_functions.currentText()
-        print(f"self.function = {self.function}")
         self.borders_x[0] = self.spinbox_start_x.value()
         self.borders_x[1] = self.spinbox_end_x.value()
 
@@ -92,10 +85,9 @@ class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
         self.step_x = self.spinbox_step_x.value()
         self.step_z = self.spinbox_step_z.value()
 
-        self.angles[0] = self.spinbox_rotate_x.value()
-        self.angles[1] = self.spinbox_rotate_y.value()
-        self.angles[2] = self.spinbox_rotate_z.value()
-        print(f"self.borders_x = {self.borders_x}")
+        self.angles[0] += self.spinbox_rotate_x.value()
+        self.angles[1] += self.spinbox_rotate_y.value()
+        self.angles[2] += self.spinbox_rotate_z.value()
         return 
 
     def get_index_function(self):
