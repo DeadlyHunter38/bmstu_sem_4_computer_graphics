@@ -25,6 +25,7 @@ class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
         self.borders_z = [0, 0]
         self.step_x = 0; self.step_z = 0
         self.angles = [0, 0, 0] #x, y, z
+        self.timer_id = 0
 
         self.setupUi(self)
 
@@ -37,6 +38,7 @@ class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
         Функции, добавленные к интерфейсу
         """
         self.but_draw_on_screen.clicked.connect(self.draw_3d_surface)
+        #self.spinbox_rotate_x.valueChanged.connect(self.draw_3d_surface)
         self.but_clean_all.clicked.connect(self.clean_all)
 
         self.screen_image.setSceneRect(0, 0, self.width(), self.height())
@@ -63,18 +65,26 @@ class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
         """
         Отрисовка трехмерной поверхности
         """
+        #if self.timer_id != -1:
+            #self.killTimer(self.timer_id)
+
+        #self.timer_id = self.startTimer(10000)
+        #self.label_function.setText(str(self.spinbox_rotate_x.value()))
+        
         self.screen_image.clear()
         functions = [f1, f2, f3]
         self.get_data()
         index_function = self.get_index_function()
         self.draw_floating_horizon(functions[index_function], self.borders_x, self.borders_z,
                                    self.step_x, self.step_z, self.angles, int(self.screen_image.width()), int(self.screen_image.height()))
+        #self.label_6.setText(str(self.spinbox_rotate_x.value()))
         pass
 
     def get_data(self):
         """
         Получить начальные значения
         """
+        #print(f"here_get_data")
         self.function = self.box_functions.currentText()
         self.borders_x[0] = self.spinbox_start_x.value()
         self.borders_x[1] = self.spinbox_end_x.value()
@@ -187,7 +197,7 @@ class MainWindow(QMainWindow, lab_10_ui.Ui_MainWindow):
             x_right, y_right = self.process_side_edge(x_previous, y_previous, x_right, 
                                                       y_right, top, bottom)
             z -= z_step
-            QCoreApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents, 0)
+            QCoreApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents, 5)
                                                        
 
     def process_side_edge(self, x_previous: int, y_previous: int,
