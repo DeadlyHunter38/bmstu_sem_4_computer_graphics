@@ -26,8 +26,6 @@ def start_input_new_polygone(window, list_of_x, list_of_y):
     label_input = Label(window, text=str(count_polygones), font=(FONT_1, SIZE_1))
     label_input.place(relx=0.97, rely=0.025, relheight=0.025, relwidth=0.01)
     list_of_x.append([]); list_of_y.append([])
-    print(f"list_of_x = {list_of_x}, list_of_y = {list_of_y}")
-
 
 def input_coordinates(ep_x, ep_y, table, list_of_x, list_of_y, count_polygons):
     print(count_polygons)
@@ -38,17 +36,13 @@ def input_coordinates(ep_x, ep_y, table, list_of_x, list_of_y, count_polygons):
         try:
             global number_coord, number_action
             number_action = actions[1]
-            print(f"number_action = {number_action}")
             x = float(ep_x.get()); y = float(ep_y.get())
             number_coord += 1
-            print(f"number_coord = {number_coord}")
             list_of_x[count_polygons - 1].append(x); list_of_y[count_polygons - 1].append(y)
-            print(f"list_of_x = {list_of_x}, list_of_y = {list_of_y}")
             string = ''
             string += ' '+str(number_coord)+"\t"+str(count_polygones)+"\t\t\t"+str(x)+"\t\t\t"+str(y)
             table.insert('', 'end', text="0", 
                         values=string)
-            print(list_of_x); print(list_of_y)
         except ValueError:
             text = 'Некорректные входные данные.\n'
             box.showerror('Ошибка', text)
@@ -75,10 +69,7 @@ def delete_coordinate(window, ep_number, table, list_of_x, list_of_y, table_size
             # Получаем значения в выделенной строке
             value_id = table.item(selected_item, option="values")
             low_board = int(value_id[0])
-            print(value_id[0])
-            print(f"values = {value_id}")
             table.delete(selected_item)
-            print(f"number_coord = {number_coord}")
         elif (type_del == 2):
             low_board = ep_number
         location = 0
@@ -90,7 +81,6 @@ def delete_coordinate(window, ep_number, table, list_of_x, list_of_y, table_size
         exit_flag = False
         for i in range(len(list_of_x)):
             for j in range(len(list_of_x[i])):
-                print(f"i = {i}, j = {j}")
                 if (location == low_board - 1):
                     del(list_of_x[i][j]); del(list_of_y[i][j])
                     start_i = i; start_j = j
@@ -109,12 +99,8 @@ def delete_coordinate(window, ep_number, table, list_of_x, list_of_y, table_size
 
         #удаление всех элементов после выделенного
         temp_id = low_board; temp_count = 0
-        print(f"temp_id = {temp_id}")
         for record in table.get_children():
-            print(f"record = {record}")
-            print(f"temp_count = {temp_count}")
             if temp_count >= low_board - 1:
-                print("here")
                 table.delete(record)
             temp_count += 1
 
@@ -126,9 +112,6 @@ def delete_coordinate(window, ep_number, table, list_of_x, list_of_y, table_size
                     table.insert('', 'end', text="0", 
                         values=str(temp_count + 1)+"\t\t\t"+str(count_polygones)+"\t\t\t"+str(list_of_x[i][j])+"\t\t\t"+str(list_of_y[i][j]))
                 temp_count += 1 
-      
-        print(list_of_x)
-        print(list_of_y)
 
 def delete_all(window, table):
     global list_of_x
@@ -163,7 +146,6 @@ def find_min_distance(list_x1, list_y1, size_matrix):
         temp_min = sqrt((list_x1[i] - list_x1[i + 1]) ** 2 + (list_y1[i] - list_y1[i + 1]) ** 2)
         if temp_min < min:
             begin_coord = i; end_coord = i + 1
-    print(f"MIN = {min}")
 
     value = sqrt((list_x1[size_matrix - 1] - list_x1[0]) ** 2 + (list_y1[size_matrix - 1] - list_y1[0]) ** 2)
     if (value <= min):
@@ -196,7 +178,6 @@ def add_coord(graph, table, ep_x, ep_y, ep_number):
                 table.insert('', 'end', 
                     values=str(temp_count + 1)+"\t\t\t"+str(i + 1)+"\t\t\t"+str(list_of_x[i][j])+"\t\t\t"+str(list_of_y[i][j]))
                 temp_count += 1
-        print(f"LIST_X = {list_of_x}, LIST_Y = {list_of_y}")
 
     except ValueError:
             text = 'Некорректные входные данные.\n'
@@ -211,8 +192,6 @@ def compare_matrix(matrix_1, matrix_2, angles_1, angles_2):
     array_1.append(matrix_1[0][len(matrix_1) - 1])
     array_2.append(matrix_2[0][len(matrix_2) - 1])
 
-    print(f"ARRAY_1 = {array_1}")
-    print(f"ARRAY_2 = {array_2}")
     array_1.sort()
     array_2.sort()
     k = array_1[0] / array_2[0] 
@@ -226,31 +205,6 @@ def compare_matrix(matrix_1, matrix_2, angles_1, angles_2):
             if (angles_1[i] != angles_2[i]):
                 flag_in = 0
                 break
-    print(f"FLAG_IN = {flag_in}")
-    '''
-    k1 = 0; k2 = 0; k3 = 0
-    size_matrix_1 = len(matrix_1); size_matrix_2 = len(matrix_2)
-    print(f"result_matrix_1 = {matrix_1}")
-    print(f"result_matrix_2 = {matrix_2}")
-    if (size_matrix_1 == size_matrix_2 and size_matrix_1):
-        j = 1
-        for i in range(size_matrix_1 - 2):
-            print(f"matrix_1[{0}][{i + 1}] / matrix_2[{0}][{i + 1}] = {matrix_1[0][i + 1]} / {matrix_2[0][i + 1]}")
-            k1 = matrix_1[0][i + 1] / matrix_2[0][i + 1]
-            print(f"k1 = {k1}")
-            print(f"matrix_1[0][{i + 2}] / matrix_2[0][{i + 2}] = {matrix_1[0][i + 2]} / {matrix_2[0][i + 2]}")
-            k2 = matrix_1[0][i + 2] / matrix_2[0][i + 2]
-            print(f"k2 = {k2}")
-            print(f"matrix_1[{i + 1}][{i + 2}] / matrix_2[{i + 1}][{i + 2}] = {matrix_1[i + 1][i + 2]} / {matrix_2[i + 1][i + 2]}")
-            k3 = matrix_1[i + 1][i + 2] / matrix_2[i + 1][i + 2]
-            print(f"k3 = {k3}")
-            j += 1
-            if (k1 != k2 or k1 != k3 or k2 != k3):
-                flag_in = 0
-                break
-    else:
-        flag_in = 0
-    print(flag_in)'''
     return flag_in
 
 def create_distanse_matrix(list_x, list_y):  
@@ -258,38 +212,22 @@ def create_distanse_matrix(list_x, list_y):
     matrix = [[0] * size_matrix for j in range (size_matrix)]
 
     begin_coord, end_coord = find_min_distance(list_x, list_y, size_matrix)
-    
-    print(list_x[begin_coord]); print(list_y[begin_coord])
-    print(f"begin_coord = {begin_coord}"); print(f"end_coord = {end_coord}")
+
     j = 0
     for i in range(begin_coord, size_matrix - 1):
-        print(f"i = {i}")
-        print(f"(list_x1[i] - list_x1[i + 1]) ** 2 + (list_y1[i] - list_y1[i + 1]) ** 2) = ({list_x[i]} - {list_x[i + 1]}) ** 2 + ({list_y[i]} - {list_y[i + 1]}) ** 2)")
-        print(f"matrix[j][j + 1] = matrix[{j}][{j + 1}]")
-        print(f"matrix[0][j + 1] = matrix[{0}][{j + 1}]")
         matrix[j][j + 1] = sqrt((list_x[i] - list_x[i + 1]) ** 2 + (list_y[i] - list_y[i + 1]) ** 2)
-        #matrix[0][j + 1] = sqrt((list_x[begin_coord] - list_x[i + 1]) ** 2 + (list_y[begin_coord] - list_y[i + 1]) ** 2)
         j += 1
     if (begin_coord == 0):
-        print(f"matrix[0][size_matrix - 1] = matrix[{0}][{size_matrix - 1}]")
-        print(f"matrix[0][j + 1] = matrix[{0}][{j + 1}]")
         matrix[0][size_matrix - 1] = sqrt((list_x[size_matrix - 1] - list_x[0]) ** 2 + (list_y[size_matrix - 1] - list_y[size_matrix - 1]) ** 2)
         if (len(list_x) > 3):
-            print(f"(list_x[begin_coord] - list_x[size_matrix - 1]) ** 2 + (list_y[begin_coord] - list_y1[i + 1]) ** 2) = ({list_x[begin_coord]} - {list_x[size_matrix - 1]}) ** 2 + ({list_y[begin_coord]} - {list_y[size_matrix - 1]}) ** 2)")
-            print(f"matrix[0][j + 1] = matrix[{0}][{j + 1}]")
             matrix[0][size_matrix - 1] = sqrt((list_x[begin_coord] - list_x[size_matrix - 1]) ** 2 + (list_y[begin_coord] - list_y[size_matrix - 1]) ** 2)
     else:
         matrix[j][j + 1] = sqrt((list_x[size_matrix - 1] - list_x[0]) ** 2 + (list_y[size_matrix - 1] - list_y[0]) ** 2)
-        #matrix[0][j + 1] = sqrt((list_x[begin_coord] - list_x[0]) ** 2 + (list_y[begin_coord] - list_y[0]) ** 2)
         j += 1
         for i in range(begin_coord - 1):
-            print(f"i = {i}, j = {j}")
             matrix[j][j + 1] = sqrt((list_x[i] - list_x[i + 1]) ** 2 + (list_y[i] - list_y[i + 1]) ** 2)
-            print(f"(list_x1[i] - list_x1[i + 1]) ** 2 + (list_y1[i] - list_y1[i + 1]) ** 2) = ({list_x[i]} - {list_x[i + 1]}) ** 2 + ({list_y[i]} - {list_y[i + 1]}) ** 2)")
-            #matrix[0][j + 1] = sqrt((list_x[begin_coord] - list_x[i + 1]) ** 2 + (list_y[begin_coord] - list_y[i + 1]) ** 2)
             j += 1
         matrix[0][size_matrix - 1] = sqrt((list_x[begin_coord - 1] - list_x[begin_coord]) ** 2 + (list_y[begin_coord - 1] - list_y[begin_coord]) ** 2)
-    print(f"MATRIX = {matrix}")
 
     return matrix
 
@@ -313,7 +251,6 @@ def define_angle(list_x, list_y):
     c = sqrt((list_x[size - 1] - list_x[1]) ** 2 + (list_y[size - 1] - list_y[1]) ** 2)
     angle = acos((a * a + b * b - c * c) / (2 * a * b))
     angles.append(angle)
-    print(f"ANGLES = {angles}")
     return angles 
     
 def draw_polygon(graph, list_of_x, list_of_y):
@@ -327,14 +264,9 @@ def draw_polygon(graph, list_of_x, list_of_y):
         result_list_y.append(list_of_y[i] * (-1) * A)
     
     global id_points, id_lines
-    print("DRAW_POLYGON\n")
-    print(f"list_of_x = {list_of_x}, list_of_y = {list_of_y}")
     size_polygon = len(result_list_x)
-    print(f"size_polygon = {size_polygon}")
     temp_id_points = 0; temp_id_lines = 0
     for i in range(size_polygon - 1):
-        print(f"{list_of_x[i]}, {list_of_y[i]}, {list_of_x[i + 1]}, {list_of_y[i + 1]}")
-        print(f"i = {i}")
         temp_id_lines = graph.create_line(result_list_x[i] + SHIFT_X + B, result_list_y[i] + SHIFT_Y + B, result_list_x[i + 1] + SHIFT_X + B,
                           result_list_y[i + 1] + B + SHIFT_Y, fill='blue', width=4)
         id_lines.append(temp_id_lines)
@@ -347,8 +279,6 @@ def draw_polygon(graph, list_of_x, list_of_y):
     temp_id_points = graph.create_oval(result_list_x[size_polygon - 1] + SHIFT_X, result_list_y[size_polygon - 1] + SHIFT_Y, result_list_x[size_polygon - 1] + SHIFT_X  + SHIFT_POINT, 
                         result_list_y[size_polygon - 1] + SHIFT_Y + SHIFT_POINT, fill='blue', activefill='yellow')
     id_points.append(temp_id_points)
-    print(f"id_lines = {id_lines}")
-    print(f"id_points = {id_points}")
 
 def find_empty_polygon(list_of_x):
     signal_empty = 0
@@ -375,7 +305,6 @@ def edit_coord(window, table, ep_x, ep_y):
         number_action = 5
         selected_item = table.selection()[0]
         x = float(ep_x.get()); y = float(ep_y.get())
-        print(f"x = {x}, y = {y}")
         value_id = table.item(selected_item, option="values")
         low_board = int(value_id[0]) - 1
         old_list_x = copy.deepcopy(list_of_x)
@@ -408,8 +337,6 @@ def delete_old_result(graph):
     id_lines = []; id_points = []
 
 def find_solution(graph, result_canvas, list_of_x, list_of_y, table, table_size):
-    print("FIND_SOLUTION")
-    print(f"list_of_x = {list_of_x}, list_of_y = {list_of_y}")
     try:
         if (len(list_of_x) < 2):
             text = 'Необходимо количество многоугольников больше одного.\n'
@@ -433,19 +360,14 @@ def find_solution(graph, result_canvas, list_of_x, list_of_y, table, table_size)
                     size_matrix_2 = len(list_of_x[j])
                     if size_matrix_1 == size_matrix_2:
                         matrix_1 = create_distanse_matrix(list_of_x[i], list_of_y[i])
-                        print(matrix_1)
                         angles_1 = define_angle(list_of_x[i], list_of_y[i])
                         matrix_2 = create_distanse_matrix(list_of_x[j], list_of_y[j])
                         angles_2 = define_angle(list_of_x[j], list_of_y[j])
-                        print(matrix_2)
                         if (compare_matrix(matrix_1, matrix_2, angles_1, angles_2) == 1 and size_matrix_1 > min_polygon):
                             start = i; end = j; min_polygon = size_matrix_1
-            print(f"i = {i}, j = {i + 1}")
             if start != end:
                 result_matrix_x1 = list_of_x[i]; result_matrix_x2 = list_of_x[i + 1]
                 result_matrix_y1 = list_of_y[i]; result_matrix_y2 = list_of_y[i + 1]
-                print(f"list_of_x = {list_of_x}, list_of_y = {list_of_y}")
-                print(f"result_matrix_2 = {result_matrix_x1}, result_matrix_2 = {result_matrix_x2}")
                 draw_polygon(graph, list_of_x[start], list_of_y[start])
                 draw_polygon(graph, list_of_x[end], list_of_y[end])
                 output_res_start = ''; output_res_end = ''
@@ -518,12 +440,9 @@ def click_on_circle(event, window, id):
     window.after(1000, in_focus(event, graph, id))
 
 def recover_coord(table, list_of_x, list_of_y, low_board, x, y):
-    print(f"x = {x}, y = {y}, low_board = {low_board}")
-    print(list_of_x); print(list_of_y)
     temp_count = 0; exit_flag = False
     for i in range(len(list_of_x)):
         for j in range(len(list_of_x[i])):
-            print(f"temp_count = {temp_count}, low_board = {low_board}")
             if temp_count == low_board:
                 list_of_x[i].pop(j); list_of_y[i].pop(j)
                 list_of_x[i].insert(j, x); list_of_y[i].insert(j, y)
@@ -531,10 +450,7 @@ def recover_coord(table, list_of_x, list_of_y, low_board, x, y):
             temp_count += 1
         if exit_flag == True:
             break
-        print(f"i = {i}, j = {j}")
-    print(f"i = {i}, j = {j}")
-
-    print(list_of_x); print(list_of_y)
+	
     for record in table.get_children():
         table.delete(record)
 
@@ -560,8 +476,6 @@ def recover_all(window, table, old_list_x, old_list_y, type_del):
             table.insert('', 'end', 
                 values=str(temp_count + 1)+"\t\t\t"+str(i + 1)+"\t\t\t"+str(list_of_x[i][j])+"\t\t\t"+str(list_of_y[i][j]))
             temp_count += 1
-    print(f"old_count_polygones = {old_count_polygones}")
-    print(f"count_polygones = {count_polygones}")
     count_polygones = copy.deepcopy(old_count_polygones)
     label_input = Label(window, text=str(count_polygones), font=(FONT_1, SIZE_1))
     label_input.place(relx=0.97, rely=0.025, relheight=0.025, relwidth=0.01)
@@ -687,7 +601,6 @@ def main():
     graph.bind("<Button-1>", lambda e, f=graph: move_start(e, f))
     graph.bind("<Button-4>", lambda e, f=graph: zoom_more(e, f))
     graph.bind("<Button-5>", lambda e, f=graph: zoom_less(e, f))
-    #graph.bind('<FocusIn>', lambda e, f=graph, id=oval_id: click_on_circle(event, f, id))
 
     #таблица, выведенная на экран (содержит значения координат)
     table_columns = ("N", "polygon", "x", "y")
