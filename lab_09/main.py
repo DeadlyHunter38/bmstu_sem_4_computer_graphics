@@ -43,7 +43,7 @@ class Main_window(QMainWindow, lab_09_ui.Ui_MainWindow):
         self.bg_colour = BG_COLOUR
         self.image.fill(self.bg_colour)
 
-        self.menu_reference.triggered.connect(lambda: self.open_reference())
+        #self.menu_reference.triggered.connect(lambda: self.open_reference())
 
     def open_reference(self):
         reference_window = DialogMenu()
